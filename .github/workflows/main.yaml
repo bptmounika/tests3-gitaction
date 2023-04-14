@@ -1,20 +1,24 @@
+---
 name: Upload S3Bucket
-
 on:
   push:
     branches:
-    - main
-
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: shallwefootball/s3-upload-action@master
-      id: S3
-      with:
-      env:
-        AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        source_dir: tests3-gitaction/index.html
+      - uses: actions/checkout@master
+      - uses: shallwefootball/s3-upload-action@master
+      - name: Generate aritifacts
+        run: echo "hello S3" >> index.html
+      - name: upload all aritifacts
+uses: actions/upload-artifact@v3
+with:
+  name: dist
+  path: ./dist
+env:
+  AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY }}
+  source_dir: ./dist
