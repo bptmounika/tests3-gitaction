@@ -5,21 +5,29 @@ on:
     branches:
       - main
 jobs:
-  deploy:
+  CypressTestReport:
+    timeout-minutes: 120
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
-      - uses: shallwefootball/s3-upload-action@master
-      - name: Generate aritifacts
-        run: echo "hello S3" >> index.html
-      - name: upload all aritifacts
-uses: actions/upload-artifact@v3
-with:
-  name: dist
-  path: ./dist
-env:
-  AWS_REGION: ${{ secrets.MY_AWS_REGION }}
-  AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{secrets.AWS_SECRET_ACCESS_KEY }}
-  source_dir: ./dist
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: cypress-Test-report
+        uses: cypress-io/github-action@v2
+        with:
+          command: npm run testing
+          browser: chrome
+          headless: true
+      - name: Upload Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: HTML_Report
+          path: cypress/reports/Result
+      - name: Upload S3
+        uses: shallwefootball/s3-upload-action@master
+        id: S3
+        with:
+          aws_key_id: ${{secrets.AWS_KEY_ID}}
+          aws_secret_access_key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          AWS_REGION: ${{ secrets.MY_AWS_REGION }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          source_dir: cypress/reports/Result
