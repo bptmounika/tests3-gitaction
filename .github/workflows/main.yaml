@@ -1,4 +1,4 @@
-name: Upload S3 BUCKET TEST
+name: Upload S3Bucket
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
-    - uses: jakejarvis/s3-sync-action@master
+    - uses: shallwefootball/s3-upload-action@master
       with:
         args: --acl public-read --follow-symlinks --delete --exclude '.git*/*'
       env:
