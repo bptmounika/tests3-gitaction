@@ -1,4 +1,4 @@
-name: Upload S3 BUCKET
+name: Upload S3 BUCKET TEST
 
 on:
   push:
